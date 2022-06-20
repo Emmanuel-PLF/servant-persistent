@@ -24,7 +24,7 @@ module Utils.Aeson where
 --import           ClassyPrelude
 
 import Data.Aeson
-import Data.Aeson.Types (Options (..), Parser, camelTo2)
+import Data.Aeson.Types (Options (..), Parser)
 import Data.Text (Text)
 import Data.Typeable (Proxy (..), Typeable, typeRep)
 import GHC.Generics (Generic, Rep)
