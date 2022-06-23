@@ -17,7 +17,7 @@ import Control.Monad.Reader (MonadReader, ReaderT, asks)
 import Control.Monad.Trans.Class (MonadTrans (lift))
 import Control.Monad.Trans.Maybe (MaybeT (..), runMaybeT)
 import qualified Data.ByteString.Char8 as BS
-import Data.Monoid ((<>))
+--import Data.Monoid ((<>))
 import Database.MongoDB.Connection
 import Database.Persist.MongoDB
 --import Database.Persist.Postgresql
@@ -34,7 +34,7 @@ import Logger
     logMsg,
     runKatipT,
   )
-import qualified Network.Socket as N
+--import qualified Network.Socket as N
 import Network.Wai (Middleware)
 import Network.Wai.Handler.Warp (Port)
 import Network.Wai.Metrics (WaiMetrics)

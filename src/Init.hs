@@ -1,8 +1,10 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Init where
 
+import qualified Data.Aeson               as A
 import Api (app)
 import Api.User (writeSwaggerJSON)
 import Config (Config (..), Environment (..), makePool, setLogger)
@@ -10,14 +12,14 @@ import Control.Concurrent (killThread)
 import Control.Exception.Safe
 import Control.Monad.Logger ()
 import qualified Control.Monad.Metrics as M
-import Data.Monoid ()
 import qualified Data.Pool as Pool
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.Typeable (typeOf)
 --import Database.Persist.Postgresql (runSqlPool)
 import qualified Katip
-import Logger (defaultLogEnv)
+import qualified Logger as L
+import           Data.Monoid              ((<>))
 --import Models (doMigrations)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (run)
@@ -26,6 +28,32 @@ import Safe (readMay)
 import Say (say)
 import System.Environment (lookupEnv)
 import System.Remote.Monitoring (forkServer, serverMetricStore, serverThreadId)
+import qualified Data.Yaml                as Yaml
+
+data ConfigApp = ConfigApp
+    { cLogger     :: L.Config
+    -- , cDatabase   :: Database.Config
+    }
+
+instance Monoid ConfigApp where
+    mempty = ConfigApp
+        { cLogger     = mempty
+        --, cDatabase   = mempty
+        }
+instance Semigroup ConfigApp where
+    l <> r = ConfigApp
+        { cLogger     = cLogger     l <> cLogger     r
+        --, cDatabase   = cDatabase   l <> cDatabase   r
+        }
+
+instance A.FromJSON ConfigApp where
+    parseJSON = A.withObject "FromJSON Fugacious.Main.Server.Config" $ \o ->
+        ConfigApp
+            <$> o A..:? "logger"      A..!= mempty
+            -- <*> o A..:? "database"    A..!= mempty
+
+
+
 
 -- | An action that creates a WAI 'Application' together with its resources,
 --   runs it, and tears it down on exit
@@ -78,7 +106,9 @@ withConfig f action = do
   say $ "on port:" <> tshow port
   env <- lookupSetting "ENV" Development
   say $ "on env: " <> tshow env
-  bracket defaultLogEnv (\x -> say "closing katip scribes" >> Katip.closeScribes x) $ \logEnv -> do
+  errOrConfig <- Yaml.decodeFileEither f
+  ConfigApp {..} <- either (fail . show) return errOrConfig
+  bracket L.defaultLogEnv (\x -> say "closing katip scribes" >> Katip.closeScribes x) $ \logEnv -> do
     say "got log env"
     !pool <- makePool env logEnv `onException` say "exception in makePool"
     say "got pool "

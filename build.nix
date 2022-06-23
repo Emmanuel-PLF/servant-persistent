@@ -118,6 +118,7 @@ let
             hls.hls-wrapper
             hls.implicit-hie
             nixpkgs.nodejs
+            nixpkgs.atom
             nixpkgs.jq
             nixpkgs.mongodb-compass
             nixpkgs.zlib

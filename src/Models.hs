@@ -21,7 +21,7 @@ import Config (Config, configPool)
 import Control.Monad.Reader (MonadIO, MonadReader, asks, liftIO)
 import Data.Aeson ()
 import Data.Text (Text)
-import Data.Time (UTCTime)
+--import Data.Time (UTCTime)
 import Data.UUID (UUID)
 --import Database.Persist.Sql (SqlPersistT, runMigration, runSqlPool)
 
@@ -29,35 +29,36 @@ import Database.Persist
 import Database.Persist.MongoDB
 import Database.Persist.TH
 import Language.Haskell.TH
-import Say (say)
+--import Say (say)
 import Types.BCrypt (BCrypt)
 import Types.Instances ()
-import Types.User (UBio, UEmail, UImage, UName)
 
-let mongoSettings = (mkPersistSettings (ConT ''MongoContext)) {mpsGeneric = False}
+import Types.User ()
+
+let mongoSettings = mkPersistSettings (ConT ''MongoContext) --{mpsGeneric = False}
  in share
       [mkPersist mongoSettings]
       [persistLowerCase|
-User json 
+User json
     name  Text
     email Text
-    bio   Text  Maybe 
-    image Text  Maybe 
-    uuid      UUID        
+    bio   Text  Maybe
+    image Text  Maybe
+    uuid      UUID
     deriving Eq Show
 
-Password json 
-    hash      BCrypt  
+Password json
+    hash      BCrypt
     user      UserId
     deriving Eq Show
 
 Command json
     num         Int
     user        UserId
-    description Text 
+    description Text
     UniqueCommandNum num
     deriving Eq Show
-    
+
 |]
 
 --type DB a = SqlPersistT IO a

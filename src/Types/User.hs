@@ -11,8 +11,6 @@
 
 module Types.User where
 
--- Prelude.
-
 import Data.Aeson
   ( FromJSON (parseJSON),
     ToJSON (toJSON),

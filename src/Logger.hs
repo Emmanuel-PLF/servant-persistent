@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Logger
-    ( adapt
+    ( Config(..)
+    , adapt
     , defaultLogEnv
     , logMsg
     , runKatipT
@@ -13,8 +14,36 @@ module Logger
 import Control.Monad.Logger
 import qualified Control.Monad.Logger as Logger
 import Katip
+import qualified Data.Aeson            as A
 import qualified System.IO as IO
+--import qualified Data.Text             as T
 import qualified System.Log.FastLogger as FastLogger
+--import           Data.Monoid              ((<>))
+import           Prelude               hiding (error, log)
+import Control.Applicative ((<|>), empty)
+
+data Config = Config
+    { cPath      :: Maybe FilePath
+    , cVerbosity :: Maybe Verbosity
+    } deriving (Show)
+
+instance Semigroup Config where
+    Config p0 v0 <> Config p1 v1 = Config (p0 <|> p1) (v0 <|> v1)
+
+instance Monoid Config where
+    mempty                              = Config empty empty
+--    Config p0 v0 `mappend` Config p1 v1 = Config (p0 <|> p1) (v0 <|> v1)
+
+instance A.FromJSON Config where
+    parseJSON = A.withObject "FromJSON Perservant.Logger.Config" $ \o -> Config
+        <$> o A..:? "path"
+        <*> o A..:? "verbosity"
+
+data Handle = Handle
+    { hConfig    :: Config
+    , hLoggerSet :: FastLogger.LoggerSet
+    }
+
 
 defaultLogEnv :: IO LogEnv
 defaultLogEnv = do

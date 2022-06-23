@@ -106,6 +106,7 @@ library
       , wai-cors
       , warp
       , resource-pool
+      , yaml
     ghc-options:
         -fwarn-unused-imports
 

@@ -24,7 +24,7 @@ import qualified Crypto.KDF.BCrypt as BC
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Text (Text)
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
-import Database.Persist.MongoDB (PersistField)
+--import Database.Persist.MongoDB (PersistField)
 import Database.Persist.Sql as S
 import Database.Persist.TH ()
 -- import Katip
