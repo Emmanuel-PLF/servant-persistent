@@ -9,7 +9,7 @@ Requirements:
 ============
 
 ### Haskell
-
+GHC 8.10.7
 
 ### Nix
 
