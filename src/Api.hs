@@ -1,7 +1,8 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Api (app) where
+module Api
+(app) where
 
 import Api.User (UserAPI, userApi, userServer)
 import Config (AppT (..), Config (..))

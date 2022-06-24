@@ -5,7 +5,13 @@
 {-# LANGUAGE StrictData #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Config where
+module Config
+    (Config (..)
+    , ConfigApp(..)
+    , Environment (..)
+    , AppT(..)
+    , makePool
+    , setLogger) where
 
 import Control.Concurrent (ThreadId)
 import Control.Exception.Safe (throwIO)
@@ -16,6 +22,7 @@ import Control.Monad.Metrics (Metrics, MonadMetrics, getMetrics)
 import Control.Monad.Reader (MonadReader, ReaderT, asks)
 import Control.Monad.Trans.Class (MonadTrans (lift))
 import Control.Monad.Trans.Maybe (MaybeT (..), runMaybeT)
+import Control.Applicative ((<|>), empty)
 import qualified Data.ByteString.Char8 as BS
 --import Data.Monoid ((<>))
 import Database.MongoDB.Connection
@@ -25,6 +32,7 @@ import Database.Persist.MongoDB
 --    ConnectionString,
 --    createPostgresqlPool,
 --  )
+import qualified Data.Aeson            as A
 import Logger
   ( Katip (..),
     KatipT,
@@ -41,6 +49,39 @@ import Network.Wai.Metrics (WaiMetrics)
 import Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import Servant.Server (ServerError)
 import System.Environment (lookupEnv)
+import qualified Data.Text as T
+
+data ConfigApp = ConfigApp
+    { cPort    :: Maybe Int
+    , cDomain    :: Maybe T.Text
+    -- , cDatabase   :: Database.Config
+    }
+
+instance Monoid ConfigApp where
+    mempty = ConfigApp
+        { cPort     = empty
+        , cDomain   = empty
+        --, cDatabase   = mempty
+        }
+instance Semigroup ConfigApp where
+    l <> r = ConfigApp
+        { cPort     = cPort     l <|> cPort     r
+        , cDomain   = cDomain   l <|> cDomain   r
+        --, cDatabase   = cDatabase   l <> cDatabase   r
+        }
+
+instance A.FromJSON ConfigApp where
+    parseJSON = A.withObject "FromJSON Fugacious.Main.Server.Config" $ \o ->
+        ConfigApp
+            <$> o A..:? "port"
+            <*> o A..:? "domain"
+            -- <*> o A..:? "database"    A..!= mempty
+
+
+
+
+
+
 
 -- | This type represents the effects we want to have for our application.
 -- We wrap the standard Servant monad with 'ReaderT Config', which gives us
