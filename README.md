@@ -12,5 +12,4 @@ Requirements:
 GHC 8.10.7
 
 ### Nix
-
 Use [haskell-hls-nix] (https://github.com/shajra/haskell-hls-nix)
