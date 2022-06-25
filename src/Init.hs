@@ -2,8 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Init 
-where
+module Init where
 
 import Api (app)
 import Api.User (writeSwaggerJSON)
@@ -11,7 +10,7 @@ import qualified Config as C
 import Control.Concurrent (killThread)
 import Control.Exception.Safe
 import Control.Monad.Logger ()
-import qualified Control.Monad.Metrics as M
+--import qualified Control.Monad.Metrics as M
 import qualified Data.Aeson as A
 --import Database.Persist.Postgresql (runSqlPool)
 import Data.Maybe (fromMaybe)
@@ -30,7 +29,8 @@ import Network.Wai.Metrics (metrics, registerWaiMetrics)
 import Safe (readMay)
 import Say (say)
 import System.Environment (lookupEnv)
-import System.Remote.Monitoring (forkServer, serverMetricStore, serverThreadId)
+
+--import System.Remote.Monitoring (forkServer, serverMetricStore, serverThreadId)
 
 data ConfigApp = ConfigApp
   { cLogger :: L.Config,
@@ -79,7 +79,6 @@ runAppDevel f = do
 
 -- | The 'initialize' function accepts the required environment information,
 -- initializes the WAI 'Application' and returns it
-
 initialize ::
   -- |
   C.Config ->
@@ -106,10 +105,10 @@ initialize cfg = do
       --  throwIO e
       say "okay all done"
 
-  say "generate Swagger"
-  writeSwaggerJSON
+  --say "generate Swagger"
+  --writeSwaggerJSON
   say "making app"
-  pure . logger . metrics (C.configWaiMetrics cfg) . app $ cfg
+  pure . logger . app $ cfg -- metrics (C.configWaiMetrics cfg) . app $ cfg
 
 withConfig :: FilePath -> (C.Config -> IO a) -> IO a
 withConfig f action = do
@@ -126,23 +125,23 @@ withConfig f action = do
     say "got log env"
     !pool <- C.makePool env logEnv `onException` say "exception in makePool"
     say "got pool "
-    bracket (forkServer "localhost" 8083) (\x -> say "closing ekg" >> do killThread $ serverThreadId x) $ \ekgServer -> do
-      say "forked ekg server"
-      let store = serverMetricStore ekgServer
-      waiMetrics <- registerWaiMetrics store `onException` say "exception in registerWaiMetrics"
-      say "registered wai metrics"
-      metr <- M.initializeWith store
-      say "got metrics"
-      action
-        C.Config
-          { configPool = pool,
-            configEnv = env,
-            configMetrics = metr,
-            configWaiMetrics = waiMetrics,
-            configLogEnv = logEnv,
-            configPort = port,
-            configEkgServer = serverThreadId ekgServer
-          }
+    --bracket (forkServer "localhost" 8083) (\x -> say "closing ekg" >> do killThread $ serverThreadId x) $ \ekgServer -> do
+    --  say "forked ekg server"
+    --  let store = serverMetricStore ekgServer
+    --  waiMetrics <- registerWaiMetrics store `onException` say "exception in registerWaiMetrics"
+    --  say "registered wai metrics"
+    --  metr <- M.initializeWith store
+    --  say "got metrics"
+    action
+      C.Config
+        { configPool = pool,
+          configEnv = env,
+          --configMetrics = metr,
+          --configWaiMetrics = waiMetrics,
+          configLogEnv = logEnv,
+          configPort = port
+          --configEkgServer = serverThreadId ekgServer
+        }
 
 -- | Takes care of cleaning up 'Config' resources
 shutdownApp :: C.Config -> IO ()
@@ -152,7 +151,7 @@ shutdownApp cfg = do
   -- Monad.Metrics does not provide a function to destroy metrics store
   -- so, it'll hopefully get torn down when async exception gets thrown
   -- at metrics server process
-  killThread (C.configEkgServer cfg)
+  --killThread (C.configEkgServer cfg)
   pure ()
 
 -- | Looks up a setting in the environment, with a provided default, and

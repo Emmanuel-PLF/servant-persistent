@@ -16,12 +16,12 @@ module Config
 where
 
 import Control.Applicative (empty, (<|>))
-import Control.Concurrent (ThreadId)
+--import Control.Concurrent (ThreadId)
 import Control.Exception.Safe (throwIO)
 import Control.Monad.Except (ExceptT, MonadError)
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Control.Monad.Logger (MonadLogger (..))
-import Control.Monad.Metrics (Metrics, MonadMetrics, getMetrics)
+--import Control.Monad.Metrics (Metrics, MonadMetrics, getMetrics)
 import Control.Monad.Reader (MonadReader, ReaderT, asks)
 import Control.Monad.Trans.Class (MonadTrans (lift))
 import Control.Monad.Trans.Maybe (MaybeT (..), runMaybeT)
@@ -50,7 +50,7 @@ import Logger
   )
 import Network.Wai (Middleware)
 import Network.Wai.Handler.Warp (Port)
-import Network.Wai.Metrics (WaiMetrics)
+--import Network.Wai.Metrics (WaiMetrics)
 import Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import Servant.Server (ServerError)
 import System.Environment (lookupEnv)
@@ -111,15 +111,15 @@ type App = AppT IO
 data Config = Config
   { configPool :: ConnectionPool,
     configEnv :: Environment,
-    configMetrics :: Metrics,
-    configWaiMetrics :: WaiMetrics,
-    configEkgServer :: ThreadId,
+    --configMetrics :: Metrics,
+    --configWaiMetrics :: WaiMetrics,
+    --configEkgServer :: ThreadId,
     configLogEnv :: LogEnv,
     configPort :: Port
   }
 
-instance Monad m => MonadMetrics (AppT m) where
-  getMetrics = asks Config.configMetrics
+--instance Monad m => MonadMetrics (AppT m) where
+--  getMetrics = asks Config.configMetrics
 
 -- | Katip instance for @AppT m@
 instance MonadIO m => Katip (AppT m) where

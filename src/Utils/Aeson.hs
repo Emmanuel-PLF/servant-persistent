@@ -24,6 +24,7 @@ module Utils.Aeson where
 --import           ClassyPrelude
 
 import Data.Aeson
+import Data.Aeson.Key
 import Data.Aeson.Types (Parser)
 import Data.Text (Text)
 import Data.Typeable (Proxy (..), Typeable, typeRep)
@@ -78,9 +79,9 @@ unwrapJson ::
 unwrapJson field parser =
   let label = show . typeRep $ Proxy @b
    in withObject label $ \o -> do
-        u <- o .: field
+        u <- o .: (fromText field)
         parser u
 
 -- | Wrap the data type to-be-serialized in some top-level object.
 wrapJson :: ToJSON a => Text -> a -> Value
-wrapJson label nested = object [label .= nested]
+wrapJson label nested = object [(fromText label) .= nested]

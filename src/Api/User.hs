@@ -12,8 +12,8 @@ module Api.User where
 import Config (AppT (..))
 import Control.Monad.Except (MonadIO, liftIO)
 import Control.Monad.Logger (logDebugNS)
-import Control.Monad.Metrics (increment, metricsCounters)
-import qualified Control.Monad.Metrics as Metrics
+--import Control.Monad.Metrics (increment, metricsCounters)
+--import qualified Control.Monad.Metrics as Metrics
 import Data.Aeson.Encode.Pretty (encodePretty)
 --import Servant.JS (vanillaJS, writeJSForAPI)
 
@@ -42,7 +42,7 @@ import Servant
     type (:>),
   )
 import Servant.OpenApi
-import qualified System.Metrics.Counter as Counter
+--import qualified System.Metrics.Counter as Counter
 import Types.BCrypt (hashPassword)
 import Types.User
   ( UserAddress (..),
@@ -73,7 +73,7 @@ userServer = allUsers :<|> singleUser :<|> createUser -- :<|> waiMetrics
 -- | Returns all users in the database.
 allUsers :: MonadIO m => AppT m [UserResponse]
 allUsers = do
-  increment "allUsers"
+  --increment "allUsers"
   logDebugNS "web" "allUsers"
   au <- runDb (selectList [] [])
   mapM mkUserResponse au
@@ -81,7 +81,7 @@ allUsers = do
 -- | Returns a user by name or throws a 404 error.
 singleUser :: MonadIO m => Text -> AppT m UserResponseBis
 singleUser str = do
-  increment "singleUser"
+  --increment "singleUser"
   logDebugNS "web" "singleUser"
   maybeUser <- runDb (selectFirst [Md.UserName ==. str] [])
   case maybeUser of
@@ -107,7 +107,7 @@ mkUserResponse (Entity pId per) = do
 -- | Creates a user in the database.
 createUser :: MonadIO m => UserRegister -> AppT m UserResponse
 createUser userReg = do
-  increment "createUser"
+  --increment "createUser"
   logDebugNS "web" "creating a user"
   hashedPw <- hashPassword $ userReg ^. password
   newUser <- runDb $ insertUser (userReg ^. name) (userReg ^. email) hashedPw
@@ -115,12 +115,12 @@ createUser userReg = do
   mkUserResponse newUser
 
 -- | Return wai metrics as JSON
-waiMetrics :: MonadIO m => AppT m (HashMap Text Int64)
-waiMetrics = do
-  increment "metrics"
-  logDebugNS "web" "metrics"
-  metr <- Metrics.getMetrics
-  liftIO $ mapM Counter.read =<< readIORef (metr ^. metricsCounters)
+-- waiMetrics :: MonadIO m => AppT m (HashMap Text Int64)
+-- waiMetrics = do
+-- increment "metrics"
+-- logDebugNS "web" "metrics"
+-- metr <- Metrics.getMetrics
+-- liftIO $ mapM Counter.read =<< readIORef (metr ^. metricsCounters)
 
 -- | Generates JavaScript to query the User API.
 -- generateJavaScript :: IO ()

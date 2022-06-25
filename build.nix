@@ -82,7 +82,7 @@ let
     #
     selectPackages = hsPkgs: with hsPkgs; {
         inherit
-        #servant-persistent 
+        servant-persistent 
         ;
     };
 

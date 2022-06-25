@@ -28,12 +28,12 @@ executable perservant
       , monad-logger
       , safe
       , safe-exceptions
-      , monad-metrics
-      , wai-middleware-metrics
+    --  , monad-metrics
+    --  , wai-middleware-metrics
       , wai-cors
       , microlens
-      , ekg >= 0.4.0.15
-      , ekg-core >= 0.1.1.7
+    --  , ekg >= 0.4.0.15
+    --  , ekg-core >= 0.1.1.7
       , say
     hs-source-dirs:
         app
@@ -65,21 +65,21 @@ library
 
     build-depends:
         base
-      , aeson == 1.5.6.0 
+      , aeson 
       , aeson-pretty
       , bytestring
       , containers
       , cryptonite
-      , ekg >= 0.4.0.15
-      , ekg-core >= 0.1.1.7
+    --  , ekg >= 0.4.0.15
+    --  , ekg-core >= 0.1.1.7
       , fast-logger
       , foreign-store
-      , katip >= 0.5.0.2 && < 0.8.6
+      , katip >= 0.5.0.2 
       , microlens
       , microlens-th
       , monad-control
       , monad-logger
-      , monad-metrics
+    --  , monad-metrics
       , mtl
       , network
       , servant-openapi3
