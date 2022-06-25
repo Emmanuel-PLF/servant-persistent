@@ -2,7 +2,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Init where
+module Init 
+where
 
 import Api (app)
 import Api.User (writeSwaggerJSON)
@@ -13,7 +14,7 @@ import Control.Monad.Logger ()
 import qualified Control.Monad.Metrics as M
 import qualified Data.Aeson as A
 --import Database.Persist.Postgresql (runSqlPool)
-import           Data.Maybe               (fromMaybe)
+import Data.Maybe (fromMaybe)
 import qualified Data.Pool as Pool
 import Data.Text (Text)
 import qualified Data.Text as Text
@@ -40,17 +41,17 @@ data ConfigApp = ConfigApp
 instance Monoid ConfigApp where
   mempty =
     ConfigApp
-      { cLogger = mempty
-      , cServer   = mempty
-      --, cDatabase   = mempty
+      { cLogger = mempty,
+        cServer = mempty
+        --, cDatabase   = mempty
       }
 
 instance Semigroup ConfigApp where
   l <> r =
     ConfigApp
-      { cLogger = cLogger l <> cLogger r
-      , cServer   = cServer   l <> cServer   r
-      --, cDatabase   = cDatabase   l <> cDatabase   r
+      { cLogger = cLogger l <> cLogger r,
+        cServer = cServer l <> cServer r
+        --, cDatabase   = cDatabase   l <> cDatabase   r
       }
 
 instance A.FromJSON ConfigApp where
@@ -61,8 +62,9 @@ instance A.FromJSON ConfigApp where
 
 -- <*> o A..:? "database"    A..!= mempty
 
--- | An action that creates a WAI 'Application' together with its resources,
+-- An action that creates a WAI 'Application' together with its resources,
 --   runs it, and tears it down on exit
+
 runAppDevel :: FilePath -> IO ()
 runAppDevel f = do
   say "in runAppDevel"
@@ -77,7 +79,11 @@ runAppDevel f = do
 
 -- | The 'initialize' function accepts the required environment information,
 -- initializes the WAI 'Application' and returns it
-initialize :: C.Config -> IO Application
+
+initialize ::
+  -- |
+  C.Config ->
+  IO Application
 initialize cfg = do
   say "initialize"
   --waiMetrics <- registerWaiMetrics (configMetrics cfg ^. M.metricsStore)

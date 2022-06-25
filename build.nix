@@ -70,6 +70,8 @@ let
       nixpkgs.haskell.packages.${config.nixpkgsGhcVersion}.extend (selfH: superH: {
                servant-persistent = selfH.callCabal2nix "servant-persistent" ./. {};
                persistent-mongoDB = nixpkgs.haskell.lib.dontCheck (selfH.callHackage "persistent-mongoDB" "2.13.0.0" {});
+               #aeson              = selfH.callHackage "aeson" "1.5.6.0" {};
+               #hashable-time      = selfH.callHackage "hashable-time" "0.2.1" {};
                persistent = nixpkgs.haskell.lib.dontCheck superH.persistent;
               });
 
@@ -80,7 +82,7 @@ let
     #
     selectPackages = hsPkgs: with hsPkgs; {
         inherit
-        servant-persistent 
+        #servant-persistent 
         ;
     };
 
@@ -118,7 +120,8 @@ let
             hls.hls-wrapper
             hls.implicit-hie
             nixpkgs.nodejs
-            #nixpkgs.atom
+            nixpkgs.git
+            nixpkgs.atom
             nixpkgs.jq
             nixpkgs.mongodb-compass
             nixpkgs.zlib

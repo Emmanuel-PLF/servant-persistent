@@ -65,7 +65,7 @@ library
 
     build-depends:
         base
-      , aeson
+      , aeson == 1.5.6.0 
       , aeson-pretty
       , bytestring
       , containers
